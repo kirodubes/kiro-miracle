@@ -49,19 +49,21 @@ border:
   focus_color: [77, 143, 214, 255]
 
 # ── Autostart (miracle's native startup_apps — this is the whole autostart) ──
-# mako reads its default path ~/.config/mako/config (shipped by kiro-wayland-dotfiles,
-# a hard dependency — miracle owns no mako/waybar-style config of its own so it stays
-# co-installable with the other editions). waybar is launched with an explicit -c so
-# it loads config-miracle.jsonc; the shared style.css next to it themes the bar.
-# GTK_A11Y=none skips the at-spi bus so waybar paints immediately instead of stalling
-# ~25s at login (same reason as kiro-sway). swaybg needs a path (see CLAUDE.md
-# validation note). Lock/idle are intentionally NOT here — see optdepends.
+# CRITICAL: miracle execs each command by tokenising it and exec'ing DIRECTLY —
+# there is NO shell, so `~` is NOT expanded (verified on real metal 2026-07-06;
+# bare `waybar -c ~/…` fails "Can't open config file" and crash-loops). Any command
+# that needs `~`, a pipe or $(…) MUST be wrapped in `sh -c '…'` (miracle respects the
+# single-quote group). mako needs none — it reads its default path ~/.config/mako/config
+# (shipped by kiro-wayland-dotfiles, a hard dep; miracle owns no mako/waybar-style of
+# its own, so it stays co-installable). waybar loads config-miracle.jsonc via -c and
+# picks up the shared style.css next to it; GTK_A11Y=none skips the at-spi bus so it
+# paints immediately instead of stalling ~25s at login. Lock/idle intentionally absent.
 startup_apps:
-  - command: env GTK_A11Y=none waybar -c ~/.config/waybar/config-miracle.jsonc
+  - command: sh -c 'GTK_A11Y=none waybar -c ~/.config/waybar/config-miracle.jsonc'
     restart_on_death: true
   - command: mako
     restart_on_death: true
-  - command: swaybg -i ~/.config/miracle-wm/bg/kiro.jpg -m fill
+  - command: sh -c 'swaybg -i ~/.config/miracle-wm/bg/kiro.jpg -m fill'
     restart_on_death: true
   - command: /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
     restart_on_death: true
@@ -213,12 +215,13 @@ custom_actions:
     modifiers: [primary]
     key: F12
 
-  # -- Screenshots (grim + slurp; pipe needs the sh -c launcher) -------------
-  - command: grim -g "$(slurp)" - | wl-copy
+  # -- Screenshots (grim + slurp; pipe + $(…) REQUIRE the sh -c wrapper — see
+  #    the startup_apps note: miracle execs directly, no shell) ---------------
+  - command: sh -c 'grim -g "$(slurp)" - | wl-copy'
     action: down
     modifiers: []
     key: Print
-  - command: grim - | wl-copy
+  - command: sh -c 'grim - | wl-copy'
     action: down
     modifiers: [primary]
     key: Print

@@ -52,10 +52,16 @@ sway shell transfer over.
   known gap, same one Hyprland/niri/sway/wayfire hit.
 
 ## Patterns / gotchas
-- **Command spawning** — `startup_apps`/`custom_actions` assume miral launches via a shell (`sh -c`),
-  so `~`, pipes (`grim | wl-copy`) and `$(slurp)` work. Very likely but **unverified on this box** —
-  and the autostart already relies on it (`swaybg -i ~/…`, `waybar -c ~/…`). mako still launches bare
-  (default path), polkit at an absolute path.
+- **Command spawning — VERIFIED (real metal, picard, 2026-07-06): miracle does NOT use a shell.**
+  It tokenises each `startup_apps`/`custom_actions` `command` (respecting single-quote groups) and
+  exec's the argv **directly**, so `~` is **NOT** expanded and pipes / `$(…)` are **NOT** interpreted.
+  Bare `waybar -c ~/…` fails "Can't open config file" and crash-loops under `restart_on_death`;
+  `swaybg -i ~/…` silently shows no wallpaper. **Any command needing `~`, a pipe or `$(…)` MUST be
+  wrapped in `sh -c '…'`** (proven to work — miracle keeps the single-quoted group intact and the
+  inner shell expands everything). So the config wraps waybar, swaybg and the two grim screenshots in
+  `sh -c`. Absolute-path commands (polkit) and plain-argv ones (mako, rofi, wpctl, app launchers) need
+  no wrapper. NOTE: `swaymsg reload` re-reads binds/gaps but does **not** re-run `startup_apps` — a
+  changed autostart command only takes effect on a fresh session (log out / back in).
 - **No `xdg-desktop-portal-wlr`** — it's wlroots-only and won't function on Mir. Ships
   `xdg-desktop-portal-gtk` (file-chooser); screencast is a known gap on Mir.
 - **App-launcher binds reference apps that may not be installed** (brave, opera, vivaldi, …) — same as

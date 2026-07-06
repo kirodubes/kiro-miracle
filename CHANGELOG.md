@@ -5,6 +5,12 @@ All notable changes to the Kiro miracle-wm edition config package.
 ## 2026.07.06
 
 ### What Changed
+- **Fixed the empty/absent waybar (real-metal validation on picard)** — miracle-wm execs
+  `startup_apps` directly with **no shell**, so the `~` in `waybar -c ~/…` and `swaybg -i ~/…` was
+  never expanded: waybar failed "Can't open config file" and crash-looped under `restart_on_death`
+  (→ no bar), and swaybg loaded no wallpaper. Wrapped every `~`/pipe/`$(…)` command in `sh -c '…'`
+  (verified to work on miracle). This resolves the long-standing "does miral use a shell?" unknown:
+  **it does not.**
 - **Fixed co-installability** — kiro-miracle no longer ships its own `mako/config` or waybar
   `style.css`. Those paths are owned by `kiro-wayland-dotfiles` (already a hard `depends`), so the
   standalone copies were a guaranteed pacman file conflict at install time and broke co-installation
@@ -15,18 +21,23 @@ All notable changes to the Kiro miracle-wm edition config package.
   static Kiro accent rgb(77,143,214) (it's miracle-native YAML, namespaced, no conflict).
 
 ### Technical Details
+- Root cause found by diagnosing a live miracle-wm session on picard: the process list showed a
+  **literal `~`** in the waybar and swaybg argv (`waybar -c ~/…`), proving miracle exec's the argv
+  directly. Confirmed with the sway IPC: `swaymsg exec 'touch ~/x'` created no `$HOME` file (no
+  tilde expansion) while `swaymsg exec "sh -c 'touch ~/x'"` did — so `sh -c` is the correct wrapper.
+- `config.yaml` fix: wrapped the two `~` startup_apps (waybar, swaybg) and the two piped `grim`
+  screenshot `custom_actions` in `sh -c '…'`. Final waybar line:
+  `sh -c 'GTK_A11Y=none waybar -c ~/.config/waybar/config-miracle.jsonc'` (`GTK_A11Y=none` still
+  avoids the ~25s at-spi login stall; `-c` loads the edition config, which picks up the shared
+  `style.css` beside it). mako/rofi/polkit/wpctl need no wrapper (plain argv / absolute path).
 - Renamed `waybar/config.jsonc` → `waybar/config-miracle.jsonc` (family convention `config-<wm>.jsonc`).
-- Removed `waybar/style.css` and the whole `mako/` dir (both owned by `kiro-wayland-dotfiles`).
-- `config.yaml` startup_apps: waybar now launches
-  `env GTK_A11Y=none waybar -c ~/.config/waybar/config-miracle.jsonc` — the `-c` loads the right
-  config and waybar picks up the shared `style.css` sitting beside it; `GTK_A11Y=none` avoids the
-  ~25s at-spi login stall (same as kiro-sway). mako still launches bare (reads the shared config at
-  its fixed default path — mako can't be namespaced).
+- Removed `waybar/style.css` and the whole `mako/` dir (both owned by `kiro-wayland-dotfiles`); mako
+  launches bare and reads the shared config at its fixed default path (can't be namespaced).
 - Squared the CLAUDE.md/README drift that still described the standalone "bare waybar/mako, default
-  paths, static waybar/mako CSS" model.
+  paths, static waybar/mako CSS" model, and flipped the "does miral use a shell?" gotcha to VERIFIED.
 
 ### Files Modified
-- `etc/skel/.config/miracle-wm/config.yaml`
+- `etc/skel/.config/miracle-wm/config.yaml` (sh -c wrappers + co-installability launch)
 - `etc/skel/.config/waybar/config-miracle.jsonc` (renamed from `config.jsonc`)
 - removed `etc/skel/.config/waybar/style.css`, `etc/skel/.config/mako/config`
 - `CLAUDE.md`, `README.md`, `CHANGELOG.md`
