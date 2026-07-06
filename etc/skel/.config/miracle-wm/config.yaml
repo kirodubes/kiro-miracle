@@ -1,0 +1,260 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# Kiro miracle-wm baseline config  (~/.config/miracle-wm/config.yaml)
+# ═══════════════════════════════════════════════════════════════════════════
+# miracle-wm is a Wayland tiling window manager built on Mir with an
+# i3/Sway-compatible IPC (waybar + swaymsg work). This is Kiro's Mir-based
+# tiling edition — the SUPER grammar + Kiro app launchers + the waybar / mako /
+# swaybg shell of kiro-hyprland/kiro-sway, ported onto miracle's native YAML.
+#
+# miracle's own defaults are ALREADY SUPER-based (action_key: meta), so we keep
+# its native tiling binds and only:
+#   - move the SUPER+E "quit compositor" footgun to SUPER+Shift+E,
+#   - overlay Kiro's CTRL+ALT / SUPER+F1..F12 app launchers via custom_actions.
+#
+# Layout model is miracle-native: SUPER+v / SUPER+h request a vertical/horizontal
+# split, SUPER+r toggles resize-mode (then arrows resize). It is NOT i3-split or
+# master/dwindle — do not port that vocabulary here.
+#
+# Reference: https://wiki.miracle-wm.org  ·  schema read from upstream source.
+# Hot-reload: SUPER + Shift + R (reload_config), or just save this file.
+# ───────────────────────────────────────────────────────────────────────────
+
+# action_key is the primary modifier — referenced as "primary" in binds below.
+# meta = the SUPER / Windows key.
+action_key: meta
+
+terminal: alacritty
+
+# ── Environment ────────────────────────────────────────────────────────────
+environment_variables:
+  - key: XDG_CURRENT_DESKTOP
+    value: miracle-wm
+  - key: MOZ_ENABLE_WAYLAND
+    value: "1"
+  - key: QT_QPA_PLATFORM
+    value: "wayland;xcb"
+
+# ── Gaps & border ──────────────────────────────────────────────────────────
+inner_gaps:
+  x: 6
+  y: 6
+outer_gaps:
+  x: 8
+  y: 8
+
+border:
+  size: 2
+  # RGBA, 0-255. Static Kiro palette (pywal is deferred — see CLAUDE.md).
+  color: [50, 50, 50, 255]
+  focus_color: [77, 143, 214, 255]
+
+# ── Autostart (miracle's native startup_apps — this is the whole autostart) ──
+# mako reads its default path ~/.config/mako/config (shipped by kiro-wayland-dotfiles,
+# a hard dependency — miracle owns no mako/waybar-style config of its own so it stays
+# co-installable with the other editions). waybar is launched with an explicit -c so
+# it loads config-miracle.jsonc; the shared style.css next to it themes the bar.
+# GTK_A11Y=none skips the at-spi bus so waybar paints immediately instead of stalling
+# ~25s at login (same reason as kiro-sway). swaybg needs a path (see CLAUDE.md
+# validation note). Lock/idle are intentionally NOT here — see optdepends.
+startup_apps:
+  - command: env GTK_A11Y=none waybar -c ~/.config/waybar/config-miracle.jsonc
+    restart_on_death: true
+  - command: mako
+    restart_on_death: true
+  - command: swaybg -i ~/.config/miracle-wm/bg/kiro.jpg -m fill
+    restart_on_death: true
+  - command: /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+    restart_on_death: true
+  - command: nm-applet --indicator
+    restart_on_death: true
+  - command: xdg-user-dirs-update
+    restart_on_death: false
+
+# ── Remap miracle defaults to the Kiro grammar ──────────────────────────────
+default_action_overrides:
+  # Free SUPER+E for the code editor; quitting the whole session moves to +Shift.
+  - name: quit_compositor
+    action: down
+    modifiers: [primary, shift]
+    key: e
+  # Reload config on the Kiro-standard chord.
+  - name: reload_config
+    action: down
+    modifiers: [primary, shift]
+    key: r
+  # Toggle floating on the Kiro-standard chord.
+  - name: toggle_floating
+    action: down
+    modifiers: [primary, shift]
+    key: space
+  # Tabbed / stacking layout on the Kiro layout chords.
+  - name: toggle_tabbing
+    action: down
+    modifiers: [primary]
+    key: w
+  - name: toggle_stacking
+    action: down
+    modifiers: [primary]
+    key: s
+
+# ── Kiro app launchers & actions (custom shell commands) ────────────────────
+custom_actions:
+  # -- Core launchers --------------------------------------------------------
+  - command: rofi -show drun
+    action: down
+    modifiers: [primary]
+    key: d
+  - command: rofi -show run
+    action: down
+    modifiers: [primary, shift]
+    key: d
+  - command: thunar
+    action: down
+    modifiers: [primary, shift]
+    key: Return
+  - command: code
+    action: down
+    modifiers: [primary]
+    key: e
+  - command: kiro-keybindings
+    action: down
+    modifiers: [primary, ctrl]
+    key: s
+  - command: archlinux-logout
+    action: down
+    modifiers: [primary]
+    key: x
+  - command: kiro-powermenu
+    action: down
+    modifiers: [primary, shift]
+    key: x
+
+  # -- CTRL+ALT launchers (mirror the kiro-sway/hyprland grammar) -------------
+  - command: alacritty
+    action: down
+    modifiers: [ctrl, alt]
+    key: Return
+  - command: brave
+    action: down
+    modifiers: [ctrl, alt]
+    key: b
+  - command: chromium
+    action: down
+    modifiers: [ctrl, alt]
+    key: c
+  - command: firefox
+    action: down
+    modifiers: [ctrl, alt]
+    key: f
+  - command: opera
+    action: down
+    modifiers: [ctrl, alt]
+    key: o
+  - command: vivaldi-stable
+    action: down
+    modifiers: [ctrl, alt]
+    key: v
+  - command: pamac-manager
+    action: down
+    modifiers: [ctrl, alt]
+    key: p
+  - command: archlinux-tweak-tool
+    action: down
+    modifiers: [ctrl, alt]
+    key: s
+
+  # -- SUPER + F1..F12 app row (mirror kiro-sway) ----------------------------
+  - command: firefox
+    action: down
+    modifiers: [primary]
+    key: F1
+  - command: code
+    action: down
+    modifiers: [primary]
+    key: F2
+  - command: inkscape
+    action: down
+    modifiers: [primary]
+    key: F3
+  - command: gimp
+    action: down
+    modifiers: [primary]
+    key: F4
+  - command: meld
+    action: down
+    modifiers: [primary]
+    key: F5
+  - command: vlc
+    action: down
+    modifiers: [primary]
+    key: F6
+  - command: virtualbox
+    action: down
+    modifiers: [primary]
+    key: F7
+  - command: thunar
+    action: down
+    modifiers: [primary]
+    key: F8
+  - command: virt-manager
+    action: down
+    modifiers: [primary]
+    key: F9
+  - command: spotify
+    action: down
+    modifiers: [primary]
+    key: F10
+  - command: rofi -show drun
+    action: down
+    modifiers: [primary]
+    key: F11
+  - command: rofi -show run
+    action: down
+    modifiers: [primary]
+    key: F12
+
+  # -- Screenshots (grim + slurp; pipe needs the sh -c launcher) -------------
+  - command: grim -g "$(slurp)" - | wl-copy
+    action: down
+    modifiers: []
+    key: Print
+  - command: grim - | wl-copy
+    action: down
+    modifiers: [primary]
+    key: Print
+
+  # -- Audio / media (wireplumber + playerctl) -------------------------------
+  - command: wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+    action: down
+    modifiers: []
+    key: XF86AudioRaiseVolume
+  - command: wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+    action: down
+    modifiers: []
+    key: XF86AudioLowerVolume
+  - command: wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    action: down
+    modifiers: []
+    key: XF86AudioMute
+  - command: playerctl play-pause
+    action: down
+    modifiers: []
+    key: XF86AudioPlay
+  - command: playerctl next
+    action: down
+    modifiers: []
+    key: XF86AudioNext
+  - command: playerctl previous
+    action: down
+    modifiers: []
+    key: XF86AudioPrev
+
+  # -- Brightness (brightnessctl) --------------------------------------------
+  - command: brightnessctl set 5%+
+    action: down
+    modifiers: []
+    key: XF86MonBrightnessUp
+  - command: brightnessctl set 5%-
+    action: down
+    modifiers: []
+    key: XF86MonBrightnessDown

@@ -1,0 +1,51 @@
+{
+  // Kiro miracle-wm bar — same layout/feel as kiro-sway. miracle-wm speaks the
+  // sway/i3 IPC, so waybar's NATIVE sway/workspaces module works (real clickable
+  // workspace pills). Launched as `waybar -c ~/.config/waybar/config-miracle.jsonc`
+  // from config.yaml startup_apps; the shared style.css (from kiro-wayland-dotfiles,
+  // sitting next to this file) themes it — that is why this ships only the config,
+  // not its own stylesheet (co-installable with the other waybar editions).
+  "layer": "top",
+  "position": "top",
+  "height": 24,
+  "spacing": 6,
+  "modules-left": ["sway/workspaces", "sway/mode", "sway/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["pulseaudio", "network", "cpu", "memory", "battery", "tray"],
+
+  "sway/workspaces": {
+    "disable-scroll": true,
+    "format": "{name}"
+  },
+  "sway/mode": {
+    "format": "<span style=\"italic\">{}</span>"
+  },
+  "sway/window": {
+    "max-length": 60
+  },
+  "clock": {
+    "format": "{:%a %d %b  %H:%M}",
+    "tooltip-format": "<tt>{calendar}</tt>"
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 muted",
+    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+    "on-click": "pavucontrol"
+  },
+  "network": {
+    "format-wifi": "󰤨 {essid}",
+    "format-ethernet": "󰈀 {ipaddr}",
+    "format-disconnected": "󰤭 offline",
+    "tooltip-format": "{ifname}: {ipaddr}"
+  },
+  "cpu": { "format": "󰻠 {usage}%" },
+  "memory": { "format": "󰍛 {percentage}%" },
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-icons": ["󰁺", "󰁼", "󰁾", "󰂀", "󰂂", "󰁹"],
+    "states": { "warning": 30, "critical": 15 }
+  },
+  "tray": { "spacing": 8 }
+}

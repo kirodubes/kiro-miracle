@@ -1,0 +1,81 @@
+###############################################################################
+#  KEYBINDINGS — miracle-wm
+#  Source: etc/skel/.config/miracle-wm/config.yaml
+#  Kiro miracle edition — SUPER grammar on miracle's Mir-based tiler.
+#  action_key = meta (SUPER). Layout is miracle-native (vertical/horizontal
+#  split request + resize-mode), NOT i3-split or master/dwindle.
+###############################################################################
+
+── 1. Applications & Launchers ────────────────────────────────────────────────
+  super + Return          Terminal (alacritty)
+  ctrl + alt + Return     Terminal (alacritty)
+  super + D               Launch apps (rofi drun)
+  super + shift + D       Run launcher (rofi run)
+  super + shift + Return  File manager (thunar)
+  super + E               Code editor
+  ctrl + alt + B          Brave
+  ctrl + alt + C          Chromium
+  ctrl + alt + F          Firefox
+  ctrl + alt + O          Opera
+  ctrl + alt + V          Vivaldi
+  ctrl + alt + P          Package manager (pamac)
+  ctrl + alt + S          Tweak tool (ATT)
+  super + F1              Firefox
+  super + F2              Code editor
+  super + F3              Inkscape
+  super + F4              GIMP
+  super + F5              Meld
+  super + F6              VLC
+  super + F7              VirtualBox
+  super + F8              File manager
+  super + F9              Virt-manager
+  super + F10             Spotify
+  super + F11             Rofi drun
+  super + F12             Rofi run
+
+── 2. Window Management ───────────────────────────────────────────────────────
+  super + Q               Close window
+  super + f               Fullscreen
+  super + shift + Space    Toggle floating
+  super + left            Focus left
+  super + right           Focus right
+  super + up              Focus up
+  super + down            Focus down
+  super + shift + left    Move window left
+  super + shift + right   Move window right
+  super + shift + up      Move window up
+  super + shift + down    Move window down
+  super + left-click      Move window   (native)
+  super + right-click     Resize window (native)
+
+── 3. Workspaces ──────────────────────────────────────────────────────────────
+  super + 1..0            Workspace 1..10  (AZERTY: same physical keys)
+  super + shift + 1..0    Move window to workspace 1..10
+
+── 4. Layout & Tiling ─────────────────────────────────────────────────────────
+  super + v               Request vertical split
+  super + h               Request horizontal split
+  super + r               Toggle resize mode (then arrows resize)
+  super + W               Tabbed layout
+  super + S               Stacking layout
+
+── 6. Multimedia & Hardware ───────────────────────────────────────────────────
+  XF86AudioRaiseVolume    Volume up
+  XF86AudioLowerVolume    Volume down
+  XF86AudioMute           Mute
+  XF86AudioPlay           Play / pause
+  XF86AudioNext           Next track
+  XF86AudioPrev           Previous track
+  XF86MonBrightnessUp     Brightness up
+  XF86MonBrightnessDown   Brightness down
+
+── 7. Screenshots ─────────────────────────────────────────────────────────────
+  Print                   Screenshot region → clipboard
+  super + Print           Screenshot screen → clipboard
+
+── 8. System & Session ────────────────────────────────────────────────────────
+  super + X               Logout menu
+  super + shift + X       Power menu
+  super + ctrl + S        Show keybindings
+  super + shift + R       Reload config
+  super + shift + E       Quit miracle-wm (exit session)
