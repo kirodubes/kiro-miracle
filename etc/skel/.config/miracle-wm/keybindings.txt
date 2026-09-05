@@ -70,8 +70,8 @@
   XF86MonBrightnessDown   Brightness down
 
 ── 7. Screenshots ─────────────────────────────────────────────────────────────
-  Print                   Screenshot region → clipboard
-  super + Print           Screenshot screen → clipboard
+  Print                   Screenshot region  -> ~/Pictures/Screenshots + clipboard
+  super + Print           Screenshot screen  -> ~/Pictures/Screenshots + clipboard
 
 ── 8. System & Session ────────────────────────────────────────────────────────
   super + X               Logout menu

@@ -215,13 +215,14 @@ custom_actions:
     modifiers: [primary]
     key: F12
 
-  # -- Screenshots (grim + slurp; pipe + $(…) REQUIRE the sh -c wrapper — see
-  #    the startup_apps note: miracle execs directly, no shell) ---------------
-  - command: sh -c 'grim -g "$(slurp)" - | wl-copy'
+  # -- Screenshots (kiro-screenshot → ~/Pictures/Screenshots + clipboard + notify).
+  #    A single command, so no sh -c wrapper is needed despite miracle exec'ing
+  #    directly with no shell — see the startup_apps note. -------------------
+  - command: kiro-screenshot region
     action: down
     modifiers: []
     key: Print
-  - command: sh -c 'grim - | wl-copy'
+  - command: kiro-screenshot screen
     action: down
     modifiers: [primary]
     key: Print
